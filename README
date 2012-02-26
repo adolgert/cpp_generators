@@ -1,0 +1,28 @@
+Dave Beazley has a nice talk on using Python generators for system programming.
+http://www.dabeaz.com/generators/ I thought the style of code was nice, so I
+wondered how to do it in C++. This little project is just an example.
+
+In Python, a generator is an object that computes a new value every time
+you call it. Python has a syntax to write functions that are generators
+just by using the yield keyword instead of return.
+
+import re
+def matches_numeric(file_lines):
+	for line in file_lines:
+		if re.match('^[0-9 \t\.]$',line):
+			yield line
+
+if __name__ == '__main__':
+	file_handle=open('infile.txt','r')
+	data=matches_numeric(file_handle)
+	for line in data:
+		print line
+
+How can you do this in C++. One trick that makes the Python function work is
+that the function can either return an object on success or signal it is
+done by returning None. In C++, an iterator signals its invalid state by matching
+to an end() iterator instead of returning a magic result. That's what this sample
+C++ code does. It's just a trial.
+
+Drew Dolgert
+adolgert@cornell.edu
