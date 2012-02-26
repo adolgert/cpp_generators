@@ -8,11 +8,15 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/array.hpp>
 
 
+/*! Reads a file line by line. The istream_iterator reads into string 
+ *  token by token, stripping whitespace, which we don't want to do.
+ */
 class file_iterator
   : public boost::iterator_facade<
         file_iterator
@@ -91,20 +95,13 @@ private:
 		}
 		field_.clear();
 		const std::string& line=*source_[0];
-		size_t pos = 0;
-		size_t field_start=0;
-		size_t field_finish=0;
-		while (pos!=std::string::npos) {
-			pos=line.find_first_not_of(" \n\t\r", pos);
-			if (pos!=std::string::npos) {
-				field_start=pos;
-				pos=line.find_first_of(" \n\t\r",pos);
-				if (pos!=std::string::npos) {
-					field_.push_back(line.substr(field_start,pos-field_start));
-				} else {
-					field_.push_back(line.substr(field_start,line.size()-field_start));
-				}
-			}
+		std::istringstream line_stream(*source_[0]);
+		
+		std::istream_iterator<std::string> f_begin(line_stream);
+		std::istream_iterator<std::string> f_end;
+		while (f_begin!=f_end) {
+			field_.push_back(*f_begin);
+			f_begin++;
 		}
 		source_[0]++;
 	}
@@ -189,17 +186,7 @@ boost::array<tee_iterator<T>,2> tee(boost::array<T,2>& begin_end) {
 
 
 
-/*!
-Drew-Dolgerts-MacBook-Pro:generative ajd27$ ./gen
-line to split: header0 header1 header2
-  split result: header0:header1:header2:
-line to split:   2.5 3.7   4.2
-  split result: header0:header1:header2:
-line to split:   2.5 3.7   4.2
-  split result: 2.7:4.5:3.2:
-line to split: 
-  split result: 2.7:4.5:3.2:
- */
+
 int main(int argc, char* argv[])
 {
 	// Construct the pipeline. The result of each step is

@@ -24,5 +24,10 @@ done by returning None. In C++, an iterator signals its invalid state by matchin
 to an end() iterator instead of returning a magic result. That's what this sample
 C++ code does. It's just a trial.
 
+Building this: The build system provided is SCons, so you just type "scons" if it's
+installed. Barring that, compile main.cpp with g++ and Boost linked. Turn on C++0x
+features so the auto keyword works.
+
+
 Drew Dolgert
 adolgert@cornell.edu
