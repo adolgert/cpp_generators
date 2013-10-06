@@ -28,7 +28,7 @@ def which(program):
 
 
 def latest_gcc(env):
-    for version in ['4.7', '4.6', '4.5', '4.4']:
+    for version in ['4.8', '4.7', '4.6', '4.5', '4.4']:
         for mp in ['', 'mp-']:
            cxx='g++-%s%s' % (mp,version)
            cc='gcc-%s%s' % (mp,version)
@@ -40,10 +40,10 @@ def latest_gcc(env):
                env['CCVERSION']=version
                env['CXXVERSION']=version
                logger.debug('Found %s' % wcxx)
-               return
+               return wcxx
 
     logger.error('Could not find g++ with a version.')
-    return
+    return None
 
 
 cpp11_test = '''
@@ -100,12 +100,26 @@ class GenerateLibCheck:
         
         # If the command line specifies a directory, then use just that.
         name=name.lower()
-        SCons.Script.AddOption('--%s-inc' % name, dest='%s_inc' % name, type='string', nargs=1,
-              action='store', metavar='DIR', help='Include directory for %s.' % name)
-        SCons.Script.AddOption('--%s-lib' % name, dest='%s_lib' % name, type='string', nargs=1,
-              action='store', metavar='DIR', help='Library directory for %s.' % name)
-        hdir=SCons.Script.GetOption('%s_inc' % name)
-        ldir=SCons.Script.GetOption('%s_lib' % name)
+
+        def add_opt(name, version):
+            '''This adds a command-line override if one doesn't already exist.'''
+            short=version[0:3].lower()
+            try:
+                SCons.Script.GetOption('%s_%s' % (name,short))
+            except AttributeError:
+                SCons.Script.AddOption('--%s-%s' % (name,short),
+                                       dest='%s_%s' % (name,short),
+                                       type='string',
+                                       nargs=1,
+                                       action='store',
+                                       metavar='DIR',
+                                       help='%s directory for %s.' % (version,name)
+                                       )
+            return SCons.Script.GetOption('%s_%s' % (name,short))
+
+
+        hdir=add_opt(name, 'Include')
+        ldir=add_opt(name, 'Library')
         if hdir:
             logger.debug('Using %s-inc from command line: %s' % (name,hdir))
             self.hdirs=[hdir]
@@ -159,6 +173,8 @@ class GenerateLibCheck:
             sym = None
         context.env.AppendUnique(LIBS=[lib])
 
+        context.Message('First check for %s is in %s' % (lib,
+                                            str(context.env['LIBPATH'])))
         result = context.sconf.CheckLib(lib,sym,None,self.lang,0)
         if result: return result
 

@@ -1,0 +1,12 @@
+*.pyc
+*.o
+graph_test
+used.cfg
+*.log
+.sconsign.dblite
+.sconf_temp
+stochnet_version.hpp
+local.cfg
+rn_gen.txt
+sketch
+ittest
