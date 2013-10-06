@@ -1,6 +1,15 @@
 #define BOOST_TEST_MODULE iterator_test
+
+#include <map>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <typeinfo>
+#include <type_traits>
 #include "boost/test/included/unit_test.hpp"
+#include "boost/range/adaptors.hpp"
 #include "streaming.h"
+#include "demangle.h"
 
 
 
@@ -17,7 +26,35 @@ BOOST_AUTO_TEST_SUITE( adaptor )
 // Range iterators
 // http://www.boost.org/doc/libs/1_54_0/libs/range/doc/html/index.html
 
-BOOST_AUTO_TEST_CASE( simple )
+BOOST_AUTO_TEST_CASE( map_first )
+{
+  using MapType=std::map<int,double>;
+  using KeyType=boost::range_detail::select_first_range<std::map<int, double>>;
+  MapType m_map;
+  m_map.insert(std::make_pair(1,3.0));
+  m_map.insert(std::make_pair(2,7.0));
+
+  KeyType by_key(m_map| boost::adaptors::map_keys);
+  std::cout << show_name(by_key) << std::endl;
+  for (auto k: by_key)
+  {
+    std::cout << k << std::endl;
+  }
+
+  auto by_initializer_list{m_map| boost::adaptors::map_keys};
+  std::cout << show_name(by_initializer_list) << std::endl;
+  for (auto k: by_initializer_list)
+  {
+    std::cout << k << std::endl;
+  }
+
+
+
+}
+
+
+
+BOOST_AUTO_TEST_CASE( pipeline )
 {
   // Construct the pipeline. The result of each step is
   // a pair of iterators in a boost::array<ITER,2>.
@@ -42,6 +79,7 @@ BOOST_AUTO_TEST_CASE( simple )
     splitted++;
   }
 }
+
 
 
 BOOST_AUTO_TEST_SUITE_END()

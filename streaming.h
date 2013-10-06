@@ -7,6 +7,12 @@
  *  behavior because we can't change the type to None when we feel like it.
  *  While the iterator code is a mess, despite help from Boost, the core
  *  of main() looks fine thanks to the C++ auto type.
+ *
+ *  Update: The constructors take a bool to say whether they are the
+ *  end iterator because it isn't possible to construct an istream; it's
+ *  an abstract type. What I missed is that you can construct a default
+ *  istream_iterator(), so this iterator shouldn't store the istream
+ *  but instead store its iterator.
  */
 #include <fstream>
 #include <iostream>
