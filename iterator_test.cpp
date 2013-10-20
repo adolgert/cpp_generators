@@ -123,4 +123,18 @@ BOOST_AUTO_TEST_CASE( stream_to_iter )
 }
 
 
+
+
+BOOST_AUTO_TEST_CASE( random_auto )
+{
+  boost::random::mt19937 rn_gen;
+  using SR=StreamingRange<decltype(rn_gen)>;
+  SR sr(rn_gen, 5);
+
+  for (auto r : sr)
+  {
+    std::cout << "ar=" << r << std::endl;
+  }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
