@@ -8,7 +8,9 @@
 #include <type_traits>
 #include "boost/test/included/unit_test.hpp"
 #include "boost/range/adaptors.hpp"
+#include "boost/random/mersenne_twister.hpp"
 #include "streaming.h"
+#include "range_stream.h"
 #include "demangle.h"
 
 
@@ -80,6 +82,19 @@ BOOST_AUTO_TEST_CASE( pipeline )
   }
 }
 
+
+BOOST_AUTO_TEST_CASE( random_stream )
+{
+  boost::random::mt19937 rn_gen;
+  StreamingRange<decltype(rn_gen)> sr(rn_gen, 5);
+
+  std::cout << "Printing random numbers." << std::endl;
+  while (!sr.empty())
+  {
+    std::cout << "n=" << sr.front() << std::endl;
+    sr.advance_begin(1);
+  }
+}
 
 
 BOOST_AUTO_TEST_SUITE_END()
