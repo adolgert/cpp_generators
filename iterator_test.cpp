@@ -97,4 +97,30 @@ BOOST_AUTO_TEST_CASE( random_stream )
 }
 
 
+
+
+
+BOOST_AUTO_TEST_CASE( stream_to_iter )
+{
+  boost::random::mt19937 rn_gen;
+  using SR=StreamingRange<decltype(rn_gen)>;
+  SR sr(rn_gen, 5);
+
+  RangeFacade<SR> b(sr);
+  RangeFacade<SR> e;
+
+  std::cout << "Printing random numbers." << std::endl;
+  for ( ; b!=e; ++b)
+  {
+    std::cout << "r=" << *b << std::endl;
+  }
+
+  while (!sr.empty())
+  {
+    std::cout << "n=" << sr.front() << std::endl;
+    sr.advance_begin(1);
+  }
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
