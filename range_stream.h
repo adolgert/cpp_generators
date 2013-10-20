@@ -71,11 +71,11 @@ class StreamingRange
 public:
   using type=StreamingRange<RNGen>;
   using value_type=double;
-  using reference_type=double&;
+  using reference_type=value_type&;
   using difference_type=size_t;
 private:
-  using UniformNorm=boost::random::uniform_01<double>;
-  size_t _cnt;
+  using UniformNorm=boost::random::uniform_01<value_type>;
+  difference_type _cnt;
   UniformNorm _uniform;
   RNGen* _rn_gen;
   // The value to which we point is stored as a pointer because
@@ -85,7 +85,7 @@ private:
   std::unique_ptr<value_type> _value;
 
 public:
-  StreamingRange(RNGen& rn_gen, size_t cnt)
+  StreamingRange(RNGen& rn_gen, difference_type cnt)
   : _rn_gen(&rn_gen), _cnt(cnt+1), _value(new value_type())
   {
     this->advance_begin(1);
